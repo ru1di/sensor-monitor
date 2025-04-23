@@ -1,11 +1,89 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>Тест GitHub Pages</title>
+  <title>Мониторинг устройств</title>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <style>
+    body {
+      font-family: Consolas, monospace;
+      background: #1e1e1e;
+      color: #e0e0e0;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      text-align: center;
+      color: #00d8ff;
+      margin-bottom: 30px;
+    }
+    .sensor {
+      background: #2b2b2b;
+      border: 2px solid #444;
+      border-left: 10px solid #007acc;
+      border-radius: 4px;
+      padding: 15px;
+      margin: 10px auto;
+      width: 90%;
+      box-shadow: 0 0 8px rgba(0, 122, 204, 0.4);
+    }
+    .sensor h2 {
+      margin: 0 0 10px 0;
+      font-size: 1.1em;
+      color: #ffd700;
+    }
+    .sensor pre {
+      font-size: 1em;
+      background: #1a1a1a;
+      padding: 10px;
+      border-radius: 3px;
+      color: #dcdcdc;
+    }
+  </style>
 </head>
 <body>
-  <h1>Сайт работает!</h1>
-  <p>Это начальная страница на GitHub Pages.</p>
+  <h1>Мониторинг устройств</h1>
+  <div id="sensors"></div>
+
+  <script>
+    var sensorCount = 7;
+
+    function createSensorBlocks() {
+      var container = document.getElementById('sensors');
+      for (var i = 1; i <= sensorCount; i++) {
+        var block = document.createElement('div');
+        block.className = 'sensor';
+        block.id = 'sensor-' + i;
+        block.innerHTML = '<h2>Устройство ' + i + '</h2><pre>Загрузка...</pre>';
+        container.appendChild(block);
+      }
+    }
+
+    function fetchSensorData(i) {
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", "data/sensor" + i + ".php?" + new Date().getTime(), true);
+      xhr.onreadystatechange = function () {
+        if (xhr.readyState === 4) {
+          var block = document.getElementById('sensor-' + i).getElementsByTagName('pre')[0];
+          if (xhr.status === 200) {
+            block.innerText = xhr.responseText;
+          } else {
+            block.innerText = 'Ошибка загрузки';
+          }
+        }
+      };
+      xhr.send();
+    }
+
+    function updateAllSensors() {
+      for (var i = 1; i <= sensorCount; i++) {
+        fetchSensorData(i);
+      }
+    }
+
+    createSensorBlocks();
+    updateAllSensors();
+    setInterval(updateAllSensors, 3000);
+  </script>
 </body>
 </html>
